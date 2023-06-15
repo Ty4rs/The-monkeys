@@ -29,9 +29,11 @@ var sprP = {
     run: [],
     runwh: [],
     jump: [],
-    jumpwh: []
+    jumpwh: [],
+    health: []
 }
-
+sprP.health = new Image; sprP.health.src = "spr/assets/healthbar.png"
+sprP.health.wh = getImgSize(sprP.health)
 for (let i = 0; i < 4; i++){
     sprP.run[i] = new Image
     sprP.run[i].src = `spr/run/run${i}.png`
@@ -61,23 +63,30 @@ function dano(dano, inimigo, dir, condicao){
     let dirD = player.dirD 
     let dirE = player.dirE
 
+    let condi = condicao
+    if(dano > 0){
 
-    if(dano > 0 && danoc == 10, condicao == 1){
-        console.log(danoc)
-        if(player.dano == 0){
-            player.vida =0
+        if(condi == 1){
+            player.vida -=5
+            condi = 0
+            
         }
+        else{
+            console.log("naofoi")
+            inimigo.vida -=10
+        }
+console.log(condi)
 
-
-        player.dano = 1
+        
         function myLoop() {         //  create a loop function
             setTimeout(function() {   //  call a 3s setTimeout when the loop is called
               
 //  your code here   
+condi = 1
             
-              
+              console.log("oi")
     
-            }, 10000)
+            }, 1000)
           }
           
           myLoop()
@@ -496,10 +505,13 @@ var telas = {
                     this.sprM()
                     ctx.save()
                     ctx.scale(this.direcao, 1)
-                    ctx.fillRect(this.x * this.direcao, this.y - height(4), this.vida * this.direcao * 2, height(2))
-
+                    
+                    let health = (146 * this.vida)/20
                     ctx.drawImage(this.sprite, this.x * this.direcao, this.y, this.largura * this.direcao, this.altura)
                     ctx.restore()
+                    ctx.fillRect(came.x + width(29.7), came.y + height(8.4), health, sprP.health.wh.height * 4 - height(10 ))
+                    ctx.drawImage(sprP.health, came.x + width(15), came.y + height(3), sprP.health.wh.width * 4, sprP.health.wh.height * 4)
+
                 },
                 
                 pres(e){
