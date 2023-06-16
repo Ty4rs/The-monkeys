@@ -1,5 +1,5 @@
 canvas{
-    background-color: rgba(41, 6, 75, 0.312);
+    background-color: rgba(255, 0, 0, 0.312);
     image-rendering: optimizeSpeed;             // Older versions of FF
     image-rendering: -moz-crisp-edges;          // FF 6.0+
     image-rendering: -webkit-optimize-contrast; // Webkit (non standard naming)
@@ -14,9 +14,14 @@ body{
     align-items: center;
     justify-content: center;
     height: 100vh;
+    background-color: rgb(100, 100, 100);
     background-color: black;
 }
 *{
     margin: 0px;
     padding:  0px;
 }
+@font-face {
+    font-family: 'thaleahfat';
+    src: url('font/ThaleahFat.ttf') format('truetype');
+  }

@@ -53,7 +53,9 @@ var tile02 = new Image
 tile02.src = "spr/tiler/tile florest4.png"
 var tile02Wh = getImgSize(tile02)
 
-
+var imgduck
+imgduck= new Image
+imgduck.src = "spr/assets/duckstart.png"
 
 var danoc = 0
 function dano(dano, inimigo, dir, condicao){
@@ -64,29 +66,30 @@ function dano(dano, inimigo, dir, condicao){
     let dirE = player.dirE
 
     let condi = condicao
+
     if(dano > 0){
 
-        if(condi == 1){
+        if(condi == 1 && danoc ==0){
             player.vida -=5
-            condi = 0
+            danoc = 1
             
         }
-        else{
+        else if(condicao == 0){
             console.log("naofoi")
             inimigo.vida -=10
         }
-console.log(condi)
+
 
         
         function myLoop() {         //  create a loop function
             setTimeout(function() {   //  call a 3s setTimeout when the loop is called
               
 //  your code here   
-condi = 1
-            
+
+                danoc = 0
               console.log("oi")
     
-            }, 1000)
+            }, 3000)
           }
           
           myLoop()
@@ -408,7 +411,28 @@ var obj = [
 
 
 
+
+const scale = window.devicePixelRatio || 1;
+
+
+ctx.scale(scale, scale);
+
 var telas = {
+    inicio:{
+        criar(){
+
+        },
+        atualiza(){
+            console.log("oi")
+            
+        },
+        desenha(){
+            ctx.drawImage(imgduck, 0, 0, width(267), height(134))
+            ctx.font = '30px thaleahfat'
+ctx.fillStyle = 'white';
+ctx.fillText('Press to start', 50, 50);
+        }
+    },
     menu: {},
     game: {
         criar(){
@@ -509,8 +533,14 @@ var telas = {
                     let health = (146 * this.vida)/20
                     ctx.drawImage(this.sprite, this.x * this.direcao, this.y, this.largura * this.direcao, this.altura)
                     ctx.restore()
+                    ctx.save()
+                    ctx.fillStyle = "rgb(100, 100, 100)"
+                    ctx.fillRect(came.x + width(29.7), came.y + height(8.4), sprP.health.wh.width * 4 - width(17), sprP.health.wh.height * 4 - height(10 ))
+                    ctx.fillStyle = "rgb(175, 37, 67)"
                     ctx.fillRect(came.x + width(29.7), came.y + height(8.4), health, sprP.health.wh.height * 4 - height(10 ))
                     ctx.drawImage(sprP.health, came.x + width(15), came.y + height(3), sprP.health.wh.width * 4, sprP.health.wh.height * 4)
+                    
+                    ctx.restore()
 
                 },
                 
@@ -747,7 +777,7 @@ function trocarTela(tela){
     telaAtiva = tela
     tela.criar()
 }
-trocarTela(telas.game)
+trocarTela(telas.inicio)
 
 
 
