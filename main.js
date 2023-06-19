@@ -1,8 +1,9 @@
-var canvas, ctx, player, width, height, came
+var canvas, ctx, player, width, height, came, button = 0
 var game = {
     height: 400,
     width: 800
 }
+
 function getImgSize(image) {
     return {
     width: image.naturalWidth,
@@ -32,6 +33,18 @@ var sprP = {
     jumpwh: [],
     health: []
 }
+var dog = {
+    run: [],
+    runwh: [],
+}
+
+
+for (let i = 0; i < 6; i++){
+    dog.run[i] = new Image
+    dog.run[i].src = `spr/run/dog${i}.png`
+    dog.runwh[i] = getImgSize(dog.run[i])
+}
+
 sprP.health = new Image; sprP.health.src = "spr/assets/healthbar.png"
 sprP.health.wh = getImgSize(sprP.health)
 for (let i = 0; i < 4; i++){
@@ -53,9 +66,9 @@ var tile02 = new Image
 tile02.src = "spr/tiler/tile florest4.png"
 var tile02Wh = getImgSize(tile02)
 
-var imgduck
-imgduck= new Image
-imgduck.src = "spr/assets/duckstart.png"
+var imgduck, loadingImg
+imgduck= new Image, loadingImg = new Image
+imgduck.src = "spr/assets/duckstart.png", loadingImg.src = "spr/assets/loading.png"
 
 var danoc = 0
 function dano(dano, inimigo, dir, condicao){
@@ -118,7 +131,19 @@ function dano(dano, inimigo, dir, condicao){
     this.velY -= 10
 }
 
-
+function grvIni(obj1, grv){
+    for (let i  = 0; i  < obj.length; i++) {
+        
+        if (obj1.y  + obj1.altura  + obj1.velY + 2> obj[i].y && obj1.y < obj[i].y + obj[i].altura && obj1.x + obj1.largura > obj[i].x  && obj1.x < obj[i].x + obj[i].largura){
+           if(obj1.velY > 0 && obj1.y + obj1.altura -1< obj[i].y ){
+            obj1.y =obj[i].y - obj1.altura -2
+            obj1.velY = 0
+           }
+        }
+        }       
+    obj1.velY += grv
+    obj1.y += obj1.velY
+}
 
 function grv(obj1, grv){
     for (let i  = 0; i  < obj.length; i++) {
@@ -249,21 +274,42 @@ function main(){
     canvas = document.createElement('canvas')
     ctx = canvas.getContext('2d')
     document.body.appendChild(canvas)
-    canvas.height = game.height
-    canvas.width = game.width
+    canvas.height = game.height*2
+    canvas.width = game.width*2
     ctx.webkitImageSmoothingEnabled = false;
     ctx.mozImageSmoothingEnabled = false;
     ctx.imageSmoothingEnabled = false;
 
 
 
+          window.devicePixelRatio=1; //Blury Text
+    window.devicePixelRatio=2;      //Clear Text
+    //(CSS pixels).
+          //Display Size
+          
+canvas.style.width = game.width  + "px";
+canvas.style.height = game.height + "px";
+
+var scale = window.devicePixelRatio; 
+    
+
+
+//CSS pixels for coordinate systems
+ctx.scale(scale, scale);
+
+
+
     document.onkeydown = andDown1
     function andDown1(e){
+        button = true
        player.down(e.keyCode)
+
     }
     document.onkeyup = andUp
     function andUp(e){
+        button = false
        player.up(e.keyCode)
+
     }
     document.onkeypress = (e)=>{
         player.pres(e.keyCode)
@@ -286,6 +332,8 @@ var inimigos = [
             desenha(){
             ctx.fillStyle = 'red'
             ctx.fillRect(this.x, this.y, this.largura, this.altura)
+
+
     }},
     {
         largura: 30,
@@ -295,11 +343,63 @@ var inimigos = [
             dir: 1,
             vida: 20,
             vel: 3,
+            velY: 0,
             desenha(){
+                grvIni(this, 0.6)
             ctx.fillStyle = 'black'
             ctx.fillRect(this.x, this.y, this.largura, this.altura)
     }}
 ]
+
+class Inimigo {
+    constructor(x, y, vida, inimigo) {
+      this.largura= inimigo.runwh[0].width*2
+      this.altura= inimigo.runwh[0].height*2
+      this.x = x
+      this.y = y
+      this.vida = vida
+      this.dir= 1
+      this.vel= 4
+      this.velY = 0
+      this.sprN = 0
+      this.sprite = dog.run[0]
+      this.desenha = ()=>{
+          grvIni(this, 0.6)
+        //ctx.fillStyle = 'black'
+        //ctx.fillRect(this.x, this.y, this.largura, this.altura)
+        ctx.drawImage(this.sprite, this.x, this.y, this.largura, this.altura)
+        this.sprM()
+    }
+    this.sprM = ()=>{
+          this.sprN += 1
+          if(this.sprN < 3){
+            this.sprite = dog.run[0]
+          }
+          if(this.sprN > 3){
+            this.sprite = dog.run[1]
+          }
+          if(this.sprN > 6){
+            this.sprite = dog.run[2]
+          }
+          if(this.sprN > 9){
+            this.sprite = dog.run[3]
+          }
+          if(this.sprN > 12){
+            this.sprite = dog.run[4]
+          }
+          if(this.sprN > 15){
+            this.sprite = dog.run[5]
+          }
+          if(this.sprN > 18){
+              this.sprN = 6}
+    }
+}}
+
+function criarInimigo(x, y, vida, inimigo) {
+    const novoInimigo = new Inimigo(x, y, vida, inimigo);
+    inimigos.push(novoInimigo);
+  }
+  
 
 var inimigoInt = {
     desenha(){
@@ -358,6 +458,7 @@ var obj = [
         y: 0,
         sprite: tile01,
         desenha(){
+            
             ctx.fillStyle = 'red'
             ctx.drawImage(this.sprite, this.x, this.y, this.larguraS, this.alturaS)
             ctx.fillRect(this.x, this.y, this.largura, this.altura)
@@ -412,31 +513,136 @@ var obj = [
 
 
 
-const scale = window.devicePixelRatio || 1;
-
-
-ctx.scale(scale, scale);
-
+var textStartO = 1
+var textStartS = 1
+var trocarTStart = 0
 var telas = {
+    
     inicio:{
+        
         criar(){
-
+             trocarTStart = 0
+            setTimeout(function() {   //  call a 3s setTimeout when the loop is called
+                 trocarTStart = 1
+                //  your code here   
+                
+                                
+                    
+                            }, 2000)
         },
         atualiza(){
-            console.log("oi")
+ 
+            if(textStartO > 0.1 && textStartS == 1 ){
+                textStartO -=0.05
+
+            }
+            else if (textStartO < 0.1  && textStartS == 1 ){
+                textStartS = -1
+
+            }
+            else if(textStartO < 1 && textStartS == -1 ){
+                textStartO +=0.05
+            }
+            else{
+                textStartS = 1
+            }
+            
+            if(button == true && trocarTStart == 1){
+                trocarTela(telas.game)
+            }
+            console.log(button)
             
         },
         desenha(){
             ctx.drawImage(imgduck, 0, 0, width(267), height(134))
+            ctx.save()
+            ctx.globalAlpha = textStartO
             ctx.font = '30px thaleahfat'
 ctx.fillStyle = 'white';
-ctx.fillText('Press to start', 50, 50);
+ctx.fillText('Press to start', width(102.3), height(120));
+            ctx.restore()
+
+            
         }
     },
+    loading: {
+        fraseA: 1,
+        opacity: 2,
+        criar(){
+            this.fraseA = this.faseA = Math.floor(Math.random() * 4) + 1;
+            textStartO = 2
+            window.onload = ()=>{
+                console.log("já carregou")
+                setTimeout(function() {   //  call a 3s setTimeout when the loop is called
+                    textStartO = 1
+                //  your code here   
+
+                console.log("opa: ", this.opacity)
+                                
+                    
+                            }, 7000)
+        }
+
+            
+        },
+        atualiza(){
+            if (textStartO < 1.5 && textStartO > 0.02){
+                textStartO -=0.02
+                console.log(textStartO)
+            }
+            else if(textStartO < 0.02){
+                trocarTela(telas.game)
+            }
+            console.log(textStartO)
+        },
+        desenha(){
+            ctx.save()
+            ctx.globalAlpha = textStartO
+            ctx.drawImage(loadingImg, 0, 0, width(267), height(134))
+
+            ctx.font = '22px thaleahfat'
+ctx.fillStyle = 'white';
+
+            if(this.fraseA == 1){
+                ctx.fillText('A escuridao se adensa, e O Pato se torna o pesadelo', width(13), height(104));
+                ctx.fillText('emplumado que assombra as ordas de inimigos em Feathered Fury', width(13), height(110));
+            }
+            else if(this.fraseA == 2){
+                ctx.fillText('Qual e o programa de TV favorito do pato?', width(13), height(104));
+                ctx.fillText('Quack Mirror!', width(13), height(110));
+            
+            }
+            else if(this.fraseA == 3){
+                ctx.fillText('Por que o pato nunca se juntou ao exército durante a Segunda Guerra Mundial?', width(11), height(104));
+                ctx.fillText('Porque ele já era um "pato neutro"! Ele preferiu evitar os lados', width(11), height(110));
+                ctx.fillText('e ficar na sua tranquilidade emplumada.', width(11), height(116));
+            
+            }
+            else if(this.fraseA == 4){
+                ctx.fillText('O que o pato fazia na rádio? ', width(13), height(54));
+                ctx.fillText('Ele transmitia mensagens codificadas para os militantes da resistência. ', width(13), height(70));
+                ctx.fillText('Mas ele não sabia que estava sendo monitorado pelos agentes da ditadura. ', width(13), height(76));
+                ctx.fillText('Eles decifraram o código e descobriram os planos dos rebeldes. ', width(13), height(82));
+                ctx.fillText('Eles invadiram a rádio e capturaram o pato. Eles o levaram para um centro  ', width(13), height(88));
+                ctx.fillText('de tortura e o submeteram a todo  tipo de crueldade. Eles arrancaram suas ', width(13), height(94));
+                ctx.fillText('penas, quebraram seu bico, cortaram suas asas. Eles o eletrocutaram,  ', width(13), height(100));
+                ctx.fillText('afogaram, queimaram. Eles o fizeram implorar por misericórdia.  ', width(13), height(106));
+                ctx.fillText('Eles o fizeram delatar seus companheiros. Eles o fizeram perder a sua', width(13), height(112));
+                ctx.fillText('dignidade. E depois o mataram.  ', width(13), height(118));
+            
+            
+            }
+
+
+            ctx.restore()
+            
+        }
+    },
+
     menu: {},
     game: {
         criar(){
-            
+            criarInimigo(0, 0, 20, dog)
             came = {
                 x: 0,
                 y: 0,
@@ -507,6 +713,10 @@ ctx.fillText('Press to start', 50, 50);
                 sprN: 0,
                 direcao: 1,
                 dano: 0,
+                clone: 0,
+                dashN:3,
+                dashNe: 0,
+                velDash: -1,
                 atualiza(){
                     grv(this, 0.6)
                     
@@ -520,28 +730,78 @@ ctx.fillText('Press to start', 50, 50);
                     
                     
                     
-
+                    if(this.dashN ==1){
+                        this.dashN = 2
+                        
+                    }
+                    else 
+                        
+                        this.x += this.velDash * this.sprU
+                        setTimeout(function() {   //  call a 3s setTimeout when the loop is called
+                            player.dashN = 0 
+                            console.log("parou:", this.dashN)
+                                        }, 400)
+                        
+                    }
+                    else{
+                        console.log("parou")
+                    }
                     
                     this.x += (Math.sign(((this.dirD * colisionDir(this)) + (this.dirE * colisionEsq(this))))* this.vel)
                 },
             
                 desenha(){
                     this.sprM()
+                    let health = (146 * this.vida)/20
+                    
                     ctx.save()
                     ctx.scale(this.direcao, 1)
                     
-                    let health = (146 * this.vida)/20
+                    ctx.fillStyle = 'red' // Nova cor desejada
+                    
                     ctx.drawImage(this.sprite, this.x * this.direcao, this.y, this.largura * this.direcao, this.altura)
                     ctx.restore()
+
+                    ctx.globalCompositeOperation = 'source-over';
                     ctx.save()
+                    ctx.globalCompositeOperation = 'source-over';
                     ctx.fillStyle = "rgb(100, 100, 100)"
                     ctx.fillRect(came.x + width(29.7), came.y + height(8.4), sprP.health.wh.width * 4 - width(17), sprP.health.wh.height * 4 - height(10 ))
                     ctx.fillStyle = "rgb(175, 37, 67)"
                     ctx.fillRect(came.x + width(29.7), came.y + height(8.4), health, sprP.health.wh.height * 4 - height(10 ))
                     ctx.drawImage(sprP.health, came.x + width(15), came.y + height(3), sprP.health.wh.width * 4, sprP.health.wh.height * 4)
+
                     
                     ctx.restore()
+                    ctx.globalCompositeOperation = 'source-over';
+                    ctx.save()
+                    ctx.scale(this.direcao, 1)
 
+                    
+          
+                   // ctx.globalCompositeOperation = 'source-in';
+                    ctx.fillStyle = 'red' // Nova cor desejada
+                    ctx.drawImage(this.sprite, this.x * this.direcao -10, this.y, this.largura * this.direcao, this.altura)
+
+                   
+                    // Restaurar configurações do contexto
+                    
+                    ctx.restore()
+                    ctx.globalCompositeOperation = 'source-over';
+
+                },
+                dash(){
+                    if(this.dashNe == 0){
+                    console.log("dash")
+                    this.dashN = 1
+                    this.velDash =30
+                    this.dashNe = 1
+                    setTimeout(function() {   //  call a 3s setTimeout when the loop is called
+                        player.dashNe = 0
+                        console.log(player.dashNe, "FOi ")
+                    }, 3000)
+                    }
+                    
                 },
                 
                 pres(e){
@@ -551,13 +811,14 @@ ctx.fillText('Press to start', 50, 50);
 
                 down(e){
                     
-                       
+                       console.log(e)
                     if (e == 68){
                         this.dirD = (((this.dirE) * -1) + 1)
                         this.right = 1
                         
                         
                     }
+                     
                     if (e == 65 ){
                         this.dirE = ((this.dirD) * -1) -1
                         this.left = -1
@@ -593,6 +854,10 @@ ctx.fillText('Press to start', 50, 50);
                         this.dirE = 0
                         this.left = 0
                 }
+                if (e == 16){
+                        this.dash()
+                        
+                    }
                 
 
                 },
@@ -759,16 +1024,21 @@ ctx.fillText('Press to start', 50, 50);
             inimigoInt.atualiza()
             player.atualiza()
             came.atualiza()
+            if(player.vida == 0 || player.vida <0){
+                trocarTela(telas.inicio)
+            }
             
         },
         desenha(){
             ctx.save()
             ctx.translate(-came.x, -came.y)
             for( i=0; i < obj.length; i++){
+                
                 obj[i].desenha()
             }
             inimigoInt.desenha()
             player.desenha()
+            
             ctx.restore()
         }
     }
@@ -777,7 +1047,7 @@ function trocarTela(tela){
     telaAtiva = tela
     tela.criar()
 }
-trocarTela(telas.inicio)
+trocarTela(telas.game)
 
 
 
