@@ -548,7 +548,7 @@ var telas = {
             }
             
             if(button == true && trocarTStart == 1){
-                trocarTela(telas.game)
+                trocarTela(telas.loading)
             }
             console.log(button)
             
@@ -571,7 +571,7 @@ ctx.fillText('Press to start', width(102.3), height(120));
         criar(){
             this.fraseA = this.faseA = Math.floor(Math.random() * 4) + 1;
             textStartO = 2
-            window.onload = ()=>{
+            
                 console.log("já carregou")
                 setTimeout(function() {   //  call a 3s setTimeout when the loop is called
                     textStartO = 1
@@ -580,8 +580,8 @@ ctx.fillText('Press to start', width(102.3), height(120));
                 console.log("opa: ", this.opacity)
                                 
                     
-                            }, 7000)
-        }
+                            }, 5000)
+        
 
             
         },
@@ -734,13 +734,14 @@ ctx.fillStyle = 'white';
                         this.dashN = 2
                         
                     }
-                    else 
+                    else if(this.dashN ==2){
                         
-                        this.x += this.velDash * this.sprU
+                        this.x += this.velDash * this.sprU * 2
                         setTimeout(function() {   //  call a 3s setTimeout when the loop is called
                             player.dashN = 0 
+                            this.velY = 0
                             console.log("parou:", this.dashN)
-                                        }, 400)
+                                        }, 100)
                         
                     }
                     else{
@@ -794,12 +795,12 @@ ctx.fillStyle = 'white';
                     if(this.dashNe == 0){
                     console.log("dash")
                     this.dashN = 1
-                    this.velDash =30
+                    this.velDash =10
                     this.dashNe = 1
                     setTimeout(function() {   //  call a 3s setTimeout when the loop is called
                         player.dashNe = 0
                         console.log(player.dashNe, "FOi ")
-                    }, 3000)
+                    }, 300)
                     }
                     
                 },
@@ -1047,7 +1048,7 @@ function trocarTela(tela){
     telaAtiva = tela
     tela.criar()
 }
-trocarTela(telas.game)
+trocarTela(telas.inicio)
 
 
 
